@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -57,6 +58,43 @@ public class PilotoController {
             dtoPiloto.put("error", "No se ha encontrado el piloto");
         }
         return dtoPiloto;
+    }
+
+    @DeleteMapping("/borrar")
+    public DTO borrarPiloto(@RequestBody DTO soloId, HttpServletRequest request) {
+        DTO dtoPiloto = new DTO();
+        Piloto piloto = pilRepo.findById(Integer.parseInt(soloId.get("id").toString()));
+        if (piloto != null) {
+            pilRepo.delete(piloto);
+            dtoPiloto.put("mensaje", "Piloto borrado correctamente");
+        } else {
+            dtoPiloto.put("error", "No se ha encontrado el piloto");
+        }
+        return dtoPiloto;
+    }
+
+    @PostMapping(path = "/anadir")
+    public void anadirPiloto(@RequestBody DatosAltaPiloto datosAltaPiloto, HttpServletRequest request) {
+        pilRepo.save(new Piloto(datosAltaPiloto.getId(), datosAltaPiloto.getDorsal(), datosAltaPiloto.getNombre(),
+                escRepo.findByNombre(datosAltaPiloto.getEquipo()), datosAltaPiloto.getPuntos()));
+    }
+
+    static class DatosAltaPiloto {
+        int id;
+        int dorsal;
+        String nombre;
+        String equipo;
+        int puntos;
+        
+        public DatosAltaPiloto(int id, int dorsal, String nombre, String equipo, int puntos) {
+            super();
+            this.id = id;
+            this.dorsal = dorsal;
+            this.nombre = nombre;
+            this.equipo = equipo;
+            this.puntos = puntos;
+        }
+        
     }
 
 }
