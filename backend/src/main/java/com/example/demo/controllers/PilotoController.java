@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.models.Piloto;
+import com.example.demo.repositories.EscuderiaRepositorio;
+import com.example.demo.repositories.PilotoRepositorio;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @CrossOrigin
 @RestController
@@ -26,7 +26,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class PilotoController {
     
     @Autowired
-    EscuderiaRepository escRepo;
+    EscuderiaRepositorio escRepo;
+
+    @Autowired
+    PilotoRepositorio pilRepo;
 
     @GetMapping("/obtener")
     public List<DTO> obtenerPilotos() {
@@ -75,8 +78,8 @@ public class PilotoController {
 
     @PostMapping(path = "/anadir")
     public void anadirPiloto(@RequestBody DatosAltaPiloto datosAltaPiloto, HttpServletRequest request) {
-        pilRepo.save(new Piloto(datosAltaPiloto.getId(), datosAltaPiloto.getDorsal(), datosAltaPiloto.getNombre(),
-                escRepo.findByNombre(datosAltaPiloto.getEquipo()), datosAltaPiloto.getPuntos()));
+        pilRepo.save(new Piloto(datosAltaPiloto.id, datosAltaPiloto.dorsal, datosAltaPiloto.nombre,
+                escRepo.findByNombre(datosAltaPiloto.equipo), datosAltaPiloto.puntos));
     }
 
     static class DatosAltaPiloto {

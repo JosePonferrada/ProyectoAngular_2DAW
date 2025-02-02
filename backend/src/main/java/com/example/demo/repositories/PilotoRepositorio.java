@@ -1,6 +1,5 @@
 package com.example.demo.repositories;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -27,6 +26,7 @@ public interface PilotoRepositorio extends JpaRepository<Piloto, Serializable> {
     @Transactional
     public abstract void delete(Piloto piloto);
 
+    @SuppressWarnings("unchecked")
     @Transactional
     public abstract Piloto save(Piloto piloto);
     
