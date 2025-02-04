@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @CrossOrigin
@@ -74,6 +75,16 @@ public class PilotoController {
             dtoPiloto.put("error", "No se ha encontrado el piloto");
         }
         return dtoPiloto;
+    }
+
+    @PutMapping(path = "/modificar")
+    public void modificarPiloto(@RequestBody DatosAltaPiloto datosAltaPiloto, HttpServletRequest request) {
+        Piloto piloto = pilRepo.findById(datosAltaPiloto.id);
+        piloto.setDorsal(datosAltaPiloto.dorsal);
+        piloto.setNombre(datosAltaPiloto.nombre);
+        piloto.setEquipo(escRepo.findByNombre(datosAltaPiloto.equipo));
+        piloto.setPuntos(datosAltaPiloto.puntos);
+        pilRepo.save(piloto);
     }
 
     @PostMapping(path = "/anadir")
