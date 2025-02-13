@@ -1,4 +1,4 @@
-package com.example.demo.repositories;
+package com.example.demo.repository;
 
 import java.io.Serializable;
 import java.util.List;
@@ -6,7 +6,8 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.demo.models.Escuderia;
+import com.example.demo.model.Escuderia;
+
 import jakarta.transaction.Transactional;
 
 public interface EscuderiaRepositorio extends JpaRepository<Escuderia, Serializable> {
@@ -14,17 +15,14 @@ public interface EscuderiaRepositorio extends JpaRepository<Escuderia, Serializa
     @Bean
     public abstract List<Escuderia> findAll();
     public abstract Escuderia findById(int id);
-    public abstract Escuderia findByNombre(String nombre);
 
-    @Transactional
-    public abstract void deleteById(int id);
+    @SuppressWarnings("unchecked")
+    public abstract Escuderia save(Escuderia escuderia);
+
     @Transactional
     public abstract void delete(Escuderia escuderia);
 
-    @SuppressWarnings("unchecked")
     @Transactional
-    public abstract Escuderia save(Escuderia escuderia);
+    public abstract void deleteById(int id);
     
-    
-
 }
