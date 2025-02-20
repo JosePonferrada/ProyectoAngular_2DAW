@@ -2,6 +2,7 @@ package com.example.demo.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -159,6 +161,40 @@ public class PilotoController {
         return listaPilotos;
     }
 
+    @Transactional
+    @PostMapping(path = "/obtenerParticipaciones", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public List<DTO> getParticipaciones(@RequestBody DTO soloId, HttpServletRequest request) {
+        List<DTO> listaParticipaciones = new ArrayList<>();
+        Piloto piloto = pilRep.findById(Integer.parseInt(soloId.get("id").toString()));
+
+        if (piloto != null) {
+
+            DTO dtoPiloto = new DTO();
+            dtoPiloto.put("id", piloto.getId());
+            dtoPiloto.put("nombre", piloto.getNombre());
+            dtoPiloto.put("dorsal", piloto.getDorsal());
+            dtoPiloto.put("escuderia", piloto.getEscuderia().getNombre());
+            listaParticipaciones.add(dtoPiloto);
+
+            // Obtener los circuitos en los que participa el piloto
+            List<DTO> listaCircuitos = piloto.getCircuitos()
+            .stream()
+            .map(circuito -> {
+                DTO dtoCircuito = new DTO();
+                dtoCircuito.put("nombre", circuito.getNombre());
+                return dtoCircuito;
+            })
+            .collect(Collectors.toList());
+
+            dtoPiloto.put("circuitos", listaCircuitos);
+        } else {
+            DTO dto = new DTO();
+            dto.put("error", "No se ha encontrado el piloto");
+            listaParticipaciones.add(dto);
+        }
+        return listaParticipaciones;
+    }
+
     @DeleteMapping(path = "/eliminar1", consumes = MediaType.APPLICATION_JSON_VALUE)
     public DTO eliminarPilotoPorId(@RequestBody DTO soloId, HttpServletRequest request) {
         DTO dtoPiloto = new DTO();
@@ -194,6 +230,46 @@ public class PilotoController {
             this.dorsal = dorsal;
             this.nombre = nombre;
             this.escuderiaId = escuderiaId;
+        }
+    }
+
+    @PutMapping(path = "/editar", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public DTO editarPiloto(@RequestBody DatosEdicionPiloto datos, HttpServletRequest request) {
+        DTO dtoPiloto = new DTO();
+        Piloto piloto = pilRep.findById(datos.id);
+
+        if (piloto != null) {
+            piloto.setDorsal(datos.dorsal);
+            piloto.setNombre(datos.nombre);
+
+            Escuderia escuderia = escRep.findByNombre(datos.escuderia);
+            if (escuderia != null) {
+                piloto.setEscuderia(escuderia);
+            } else {
+                dtoPiloto.put("error", "No se ha encontrado la escudería");
+                return dtoPiloto;
+            }
+
+            pilRep.save(piloto);
+            dtoPiloto.put("mensaje", "Piloto editado correctamente");
+        } else {
+            dtoPiloto.put("error", "No se ha encontrado el piloto");
+        }
+        return dtoPiloto;
+    }
+
+    static class DatosEdicionPiloto {
+        public int id;
+        public int dorsal;
+        public String nombre;
+        public String escuderia;
+
+        public DatosEdicionPiloto(int id, int dorsal, String nombre, String escuderia) {
+            super();
+            this.id = id;
+            this.dorsal = dorsal;
+            this.nombre = nombre;
+            this.escuderia = escuderia;
         }
     }
 

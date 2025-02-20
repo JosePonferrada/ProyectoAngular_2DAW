@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -146,6 +147,35 @@ public class CircuitoController {
             listaParticipantes.add(dto);
         }
         return listaParticipantes;
+    }
+
+    @PutMapping("/editar")
+    public DTO editarCircuito(@RequestBody DatosEdicionCircuito datos, HttpServletRequest request) {
+        DTO dtoCircuito = new DTO();
+        Circuito circuito = cirRep.findById(datos.id);
+
+        if (circuito != null) {
+            circuito.setNombre(datos.nombre);
+            circuito.setPais(datos.pais);
+            cirRep.save(circuito);
+            dtoCircuito.put("mensaje", "Circuito editado correctamente");
+        } else {
+            dtoCircuito.put("error", "No se ha encontrado el circuito");
+        }
+        return dtoCircuito;
+    }
+
+    static class DatosEdicionCircuito {
+        public int id;
+        public String nombre;
+        public String pais;
+
+        public DatosEdicionCircuito(int id, String nombre, String pais) {
+            super();
+            this.id = id;
+            this.nombre = nombre;
+            this.pais = pais;
+        }
     }
 
 }
