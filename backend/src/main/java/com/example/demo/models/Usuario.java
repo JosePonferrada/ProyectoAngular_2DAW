@@ -1,14 +1,15 @@
-package com.example.demo.model;
+package com.example.demo.models;
 
 import java.io.Serializable;
 import jakarta.persistence.*;
 
 
 /**
- * The persistent class for the usuario database table.
+ * The persistent class for the usuarios database table.
  * 
  */
 @Entity
+@Table(name="usuarios")
 @NamedQuery(name="Usuario.findAll", query="SELECT u FROM Usuario u")
 public class Usuario implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -16,23 +17,15 @@ public class Usuario implements Serializable {
 	@Id
 	private int id;
 
-	private String username;
+	private String email;
 
 	private String password;
 
-	private String email;
-
 	private String role;
 
+	private String username;
+
 	public Usuario() {
-	}
-
-	public String getEmail() {
-		return this.email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
 	}
 
 	public int getId() {
@@ -41,6 +34,14 @@ public class Usuario implements Serializable {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getEmail() {
+		return this.email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getPassword() {
