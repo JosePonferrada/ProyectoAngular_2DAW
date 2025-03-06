@@ -13,11 +13,19 @@ import { PilotoListComponent } from './components/piloto/piloto-list/piloto-list
 import { PilotoDetailComponent } from './components/piloto/piloto-detail/piloto-detail.component';
 import { PilotoFormComponent } from './components/piloto/piloto-form/piloto-form.component';
 
+// Circuito components
+import { CircuitoListComponent } from './components/circuito/circuito-list/circuito-list.component';
+import { CircuitoDetailComponent } from './components/circuito/circuito-detail/circuito-detail.component';
+
 // Auth components
 import { LoginComponent } from './components/auth/login/login.component';
+import { RegisterComponent } from './components/auth/register/register.component';
+
+// Home component
+import { HomeComponent } from './home/home.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/escuderias', pathMatch: 'full' },
+  { path: '', component: HomeComponent },
   
   // Escuderia routes
   { path: 'escuderias', component: EscuderiaListComponent },
@@ -51,9 +59,14 @@ export const routes: Routes = [
   },
   { path: 'pilotos/:id', component: PilotoDetailComponent },
   
+  // Circuito routes
+  { path: 'circuitos', component: CircuitoListComponent, canActivate: [authGuard] },
+  { path: 'circuitos/:id', component: CircuitoDetailComponent, canActivate: [authGuard] },
+
   // Auth routes
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   
   // Wildcard route
-  { path: '**', redirectTo: '/escuderias' }
+  { path: '**', redirectTo: '' }
 ];

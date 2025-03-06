@@ -253,8 +253,7 @@ public class EscuderiaController {
                 dto.put("id", piloto.getId());
                 dto.put("dorsal", piloto.getDorsal());
                 dto.put("nombre", piloto.getNombre());
-                // No need to include escuderia_id since we're already in the context of that
-                // escuderia
+                dto.put("escuderia_id", escuderia.getId());
                 listaPilotos.add(dto);
             }
         }

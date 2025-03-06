@@ -56,9 +56,10 @@ export class EscuderiaDetailComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.error = 'Error loading pilotos';
+        console.error('Error cargando pilotos:', err);
+        // No muestra error en la interfaz, simplemente continúa mostrando un array vacío
+        this.pilotos = [];
         this.loading = false;
-        console.error(err);
       }
     });
   }

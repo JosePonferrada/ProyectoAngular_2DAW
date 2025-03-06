@@ -1,0 +1,56 @@
+<div class="container mt-4">
+    @if (loading) {
+      <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+    }
+  
+    @if (error) {
+      <div class="alert alert-danger">{{ error }}</div>
+    }
+  
+    @if (!loading && !error && circuito) {
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+          <h3>{{ circuito.nombre }}</h3>
+          <div>
+            <button [routerLink]="['/circuitos']" class="btn btn-light me-2">Volver</button>
+            @if (isAdmin()) {
+              <button [routerLink]="['/circuitos/edit', circuito.id]" class="btn btn-warning">
+                Editar
+              </button>
+            }
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>ID:</strong> {{ circuito.id }}</p>
+              <p><strong>Nombre:</strong> {{ circuito.nombre }}</p>
+              <p><strong>País:</strong> {{ circuito.pais }}</p>
+            </div>
+          </div>
+  
+          <hr>
+          <h4>Pilotos participantes</h4>
+          @if (loading) {
+            <div class="d-flex justify-content-center">
+              <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Cargando participaciones...</span>
+              </div>
+            </div>
+          } @else if (circuito.pilotos && circuito.pilotos.length > 0) {
+            <ul class="list-group">
+              @for (piloto of circuito.pilotos; track $index) {
+                <li class="list-group-item">{{ piloto }}</li>
+              }
+            </ul>
+          } @else {
+            <p class="text-muted">No hay pilotos registrados para este circuito.</p>
+          }
+        </div>
+      </div>
+    }
+  </div>

@@ -1,0 +1,93 @@
+<div class="home-container">
+    <header class="hero rounded">
+      <div class="hero-content">
+        <h1>Bienvenido a F1 Manager</h1>
+        <p class="subtitle">Gestiona escuderías y pilotos de Fórmula 1</p>
+        <div class="cta-buttons">
+          <a [routerLink]="['/pilotos']" class="btn btn-primary me-2">Ver Pilotos</a>
+          <a [routerLink]="['/escuderias']" class="btn btn-secondary">Ver Escuderías</a>
+        </div>
+      </div>
+    </header>
+  
+    <section class="features rounded">
+      <h2 class="section-title">Características</h2>
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="card feature-card">
+              <div class="card-body text-center">
+                <div class="feature-icon">
+                  <i class="bi bi-person"></i>
+                </div>
+                <h3>Pilotos</h3>
+                <p>Gestiona la información de todos los pilotos de F1</p>
+                <a [routerLink]="['/pilotos']" class="btn btn-outline-primary btn-sm">Explorar</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card feature-card">
+              <div class="card-body text-center">
+                <div class="feature-icon">
+                  <i class="bi bi-building"></i>
+                </div>
+                <h3>Escuderías</h3>
+                <p>Administra las escuderías participantes en el campeonato</p>
+                <a [routerLink]="['/escuderias']" class="btn btn-outline-primary btn-sm">Explorar</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card feature-card">
+              <div class="card-body text-center">
+                <div class="feature-icon">
+                  <i class="bi bi-map"></i>
+                </div>
+                <h3>Circuitos</h3>
+                <p>Explora los circuitos donde compiten nuestros pilotos</p>
+                <a [routerLink]="['/circuitos']" class="btn btn-outline-primary btn-sm">Explorar</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="card feature-card">
+              <div class="card-body text-center">
+                <div class="feature-icon">
+                  <i class="bi bi-trophy"></i>
+                </div>
+                <h3>Campeonato</h3>
+                <p>Consulta las clasificaciones y resultados</p>
+                <a [routerLink]="['/circuitos']" class="btn btn-outline-primary btn-sm">Explorar</a>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </section>
+  
+    <section class="latest-content">
+      <div class="container">
+        <h2 class="section-title">Últimas actualizaciones</h2>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-body">
+                <h3>Nuevos pilotos</h3>
+                <p>Los equipos están confirmando sus alineaciones para la próxima temporada.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-body">
+                <h3>Cambios en las escuderías</h3>
+                <p>Descubre los últimos cambios de patrocinadores y personal técnico.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>

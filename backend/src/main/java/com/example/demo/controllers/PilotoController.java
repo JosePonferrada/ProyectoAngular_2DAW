@@ -49,7 +49,7 @@ public class PilotoController {
             dto.put("id", piloto.getId());
             dto.put("nombre", piloto.getNombre());
             dto.put("dorsal", piloto.getDorsal());
-            dto.put("escuderia", piloto.getEscuderia().getNombre());
+            dto.put("escuderia_id", piloto.getEscuderia().getId());
 
             /* // Obtener los circuitos en los que participa el piloto
             List<String> nombresCircuitos = piloto.getCircuitos()
@@ -73,7 +73,7 @@ public class PilotoController {
             dtoPiloto.put("id", piloto.getId());
             dtoPiloto.put("nombre", piloto.getNombre());
             dtoPiloto.put("dorsal", piloto.getDorsal());
-            dtoPiloto.put("escuderia", piloto.getEscuderia().getNombre());
+            dtoPiloto.put("escuderia_id", piloto.getEscuderia().getId());
 
             /* // Obtener los circuitos en los que participa el piloto
             List<String> nombresCircuitos = piloto.getCircuitos()
@@ -209,13 +209,63 @@ public class PilotoController {
         return dtoPiloto;
     }
 
-    @PostMapping("/anadirNuevo")
-    public void anadirPiloto(@RequestBody DatosAltaPiloto datos, HttpServletRequest request) {
-        Escuderia escuderia = escRep.findById(datos.escuderiaId);
+    @PostMapping(path = "/anadirNuevo", consumes = MediaType.APPLICATION_JSON_VALUE)
+public DTO anadirPiloto(@RequestBody DTO datos, HttpServletRequest request) {
+    DTO respuesta = new DTO();
+    
+    try {
+        System.out.println("Datos recibidos para nuevo piloto: " + datos.toString());
         
-        pilRep.save(new Piloto(datos.id, datos.dorsal, datos.nombre, escuderia));
-
+        // Extraer los datos con manejo de errores
+        String nombre = datos.get("nombre").toString();
+        int dorsal = Integer.parseInt(datos.get("dorsal").toString());
+        
+        // Manejar escuderia_id que puede venir como String
+        int escuderiaId;
+        Object escuderiaObj = datos.get("escuderia_id");
+        if (escuderiaObj instanceof String) {
+            escuderiaId = Integer.parseInt((String)escuderiaObj);
+        } else if (escuderiaObj instanceof Number) {
+            escuderiaId = ((Number)escuderiaObj).intValue();
+        } else {
+            throw new IllegalArgumentException("Formato de escuderia_id inválido");
+        }
+        
+        System.out.println("Buscando escudería con ID: " + escuderiaId);
+        Escuderia escuderia = escRep.findById(escuderiaId);
+        
+        if (escuderia == null) {
+            System.err.println("No se encontró escudería con ID: " + escuderiaId);
+            respuesta.put("resultado", "error");
+            respuesta.put("mensaje", "Escudería no encontrada");
+            return respuesta;
+        }
+        
+        // Crear y guardar el piloto
+        Piloto nuevoPiloto = new Piloto();
+        nuevoPiloto.setNombre(nombre);
+        nuevoPiloto.setDorsal(dorsal);
+        nuevoPiloto.setEscuderia(escuderia);
+        
+        System.out.println("Guardando piloto: " + nuevoPiloto.getNombre() + 
+                           " con escudería: " + escuderia.getNombre());
+        
+        pilRep.save(nuevoPiloto);
+        
+        System.out.println("Piloto guardado con ID: " + nuevoPiloto.getId());
+        respuesta.put("resultado", "ok");
+        respuesta.put("id", nuevoPiloto.getId());
+        respuesta.put("mensaje", "Piloto añadido correctamente");
+        
+    } catch (Exception e) {
+        System.err.println("Error al añadir piloto: " + e.getMessage());
+        e.printStackTrace();
+        respuesta.put("resultado", "error");
+        respuesta.put("mensaje", "Error: " + e.getMessage());
     }
+    
+    return respuesta;
+}
 
     static class DatosAltaPiloto {
         public int id;
@@ -234,29 +284,63 @@ public class PilotoController {
     }
 
     @PutMapping(path = "/editar", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public DTO editarPiloto(@RequestBody DatosEdicionPiloto datos, HttpServletRequest request) {
-        DTO dtoPiloto = new DTO();
-        Piloto piloto = pilRep.findById(datos.id);
-
-        if (piloto != null) {
-            piloto.setDorsal(datos.dorsal);
-            piloto.setNombre(datos.nombre);
-
-            Escuderia escuderia = escRep.findByNombre(datos.escuderia);
-            if (escuderia != null) {
-                piloto.setEscuderia(escuderia);
-            } else {
-                dtoPiloto.put("error", "No se ha encontrado la escudería");
-                return dtoPiloto;
-            }
-
-            pilRep.save(piloto);
-            dtoPiloto.put("mensaje", "Piloto editado correctamente");
+public DTO editarPiloto(@RequestBody DTO datos, HttpServletRequest request) {
+    DTO respuesta = new DTO();
+    
+    try {
+        System.out.println("Datos recibidos para edición: " + datos.toString());
+        
+        // Extraer los datos con manejo de errores
+        int id = Integer.parseInt(datos.get("id").toString());
+        String nombre = datos.get("nombre").toString();
+        int dorsal = Integer.parseInt(datos.get("dorsal").toString());
+        
+        // Manejar escuderia_id que puede venir como String
+        int escuderiaId;
+        Object escuderiaObj = datos.get("escuderia_id");
+        if (escuderiaObj instanceof String) {
+            escuderiaId = Integer.parseInt((String)escuderiaObj);
+        } else if (escuderiaObj instanceof Number) {
+            escuderiaId = ((Number)escuderiaObj).intValue();
         } else {
-            dtoPiloto.put("error", "No se ha encontrado el piloto");
+            throw new IllegalArgumentException("Formato de escuderia_id inválido");
         }
-        return dtoPiloto;
+        
+        // Buscar el piloto a editar
+        Piloto piloto = pilRep.findById(id);
+        if (piloto == null) {
+            respuesta.put("resultado", "error");
+            respuesta.put("mensaje", "Piloto no encontrado");
+            return respuesta;
+        }
+        
+        // Buscar la escudería
+        Escuderia escuderia = escRep.findById(escuderiaId);
+        if (escuderia == null) {
+            respuesta.put("resultado", "error");
+            respuesta.put("mensaje", "Escudería no encontrada");
+            return respuesta;
+        }
+        
+        // Actualizar el piloto
+        piloto.setNombre(nombre);
+        piloto.setDorsal(dorsal);
+        piloto.setEscuderia(escuderia);
+        
+        pilRep.save(piloto);
+        
+        respuesta.put("resultado", "ok");
+        respuesta.put("mensaje", "Piloto actualizado correctamente");
+        
+    } catch (Exception e) {
+        System.err.println("Error al editar piloto: " + e.getMessage());
+        e.printStackTrace();
+        respuesta.put("resultado", "error");
+        respuesta.put("mensaje", "Error: " + e.getMessage());
     }
+    
+    return respuesta;
+}
 
     static class DatosEdicionPiloto {
         public int id;

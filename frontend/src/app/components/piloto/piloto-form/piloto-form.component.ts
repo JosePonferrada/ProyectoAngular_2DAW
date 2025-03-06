@@ -41,7 +41,7 @@ export class PilotoFormComponent implements OnInit, ComponentWithUnsavedChanges 
 
   ngOnInit(): void {
     this.loadEscuderias();
-    
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.editMode = true;
@@ -93,25 +93,29 @@ export class PilotoFormComponent implements OnInit, ComponentWithUnsavedChanges 
     this.success = null;
 
     const formData = this.pilotoForm.value;
-    
+
     if (this.editMode && this.pilotoId) {
       const piloto: Piloto = {
         id: this.pilotoId,
         dorsal: formData.dorsal,
         nombre: formData.nombre,
-        escuderia_id: formData.escuderia_id
+        escuderia_id: Number(formData.escuderia_id)
       };
+
+      console.log(piloto);
 
       this.pilotoService.updatePiloto(piloto).subscribe({
         next: (response) => {
+          console.log('Respuesta del servidor:', JSON.stringify(response));
           this.submitting = false;
-          if (response?.result === 'ok') {
+          if (response?.result === 'ok' || response?.resultado === 'ok') {
             this.success = 'Piloto actualizado correctamente';
             this.pilotoForm.markAsPristine();
             // Navigate after a short delay to show success message
             setTimeout(() => this.router.navigate(['/pilotos', this.pilotoId]), 1500);
           } else {
-            this.error = response?.error || 'Error al actualizar el piloto';
+            // Mostrar mensaje de error desde el servidor o mensaje predeterminado
+            this.error = response.mensaje || response.error || 'Error al actualizar el piloto';
           }
         },
         error: (err) => {
@@ -131,20 +135,23 @@ export class PilotoFormComponent implements OnInit, ComponentWithUnsavedChanges 
 
       this.pilotoService.addPiloto(piloto).subscribe({
         next: (response) => {
-          this.submitting = false;
-          if (response?.result === 'ok') {
-            this.success = 'Piloto creado correctamente';
-            this.pilotoForm.markAsPristine();
-            // Navigate after a short delay to show success message
-            setTimeout(() => this.router.navigate(['/pilotos']), 1500);
+          console.log('Respuesta completa del servidor:', response);
+
+          // Verificar ambos posibles campos de éxito/error
+          if (response.resultado === 'ok' || response.result === 'ok') {
+            // Éxito - navegar o mostrar mensaje
+            this.router.navigate(['/pilotos']);
           } else {
-            this.error = response?.error || 'Error al crear el piloto';
+            // Error desde el servidor
+            console.error('Error del servidor:', response.mensaje || response.error || 'Error desconocido');
+            // Mostrar mensaje de error
           }
+          this.loading = false;
         },
         error: (err) => {
-          this.submitting = false;
-          this.error = 'Error al crear el piloto';
-          console.error(err);
+          console.error('Error HTTP:', err);
+          this.loading = false;
+          // Mostrar mensaje de error
         }
       });
     }
@@ -176,7 +183,7 @@ export class PilotoFormComponent implements OnInit, ComponentWithUnsavedChanges 
     if (field.hasError('max')) {
       return `El valor debe ser menor o igual a ${field.getError('max').max}`;
     }
-    
+
     return 'Campo inválido';
   }
 }

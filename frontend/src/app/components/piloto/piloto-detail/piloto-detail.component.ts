@@ -41,34 +41,39 @@ export class PilotoDetailComponent implements OnInit {
     this.pilotoService.getPilotoById(id).subscribe({
       next: (data) => {
         this.piloto = data;
-        if (data.escuderia_id) {
-          this.loadEscuderia(data.escuderia_id);
+        console.log('Piloto cargado:', this.piloto);
+        
+        // Si hay ID de escudería, cargar los datos completos de la escudería
+        if (this.piloto && this.piloto.escuderia_id) {
+          this.loadEscuderia(this.piloto.escuderia_id);
         } else {
           this.loading = false;
         }
       },
       error: (err) => {
-        this.error = 'Error loading piloto';
+        console.error('Error cargando piloto:', err);
+        this.error = 'Error cargando datos del piloto';
         this.loading = false;
-        console.error(err);
       }
     });
   }
 
   loadEscuderia(id: number): void {
+    console.log('Cargando escudería con ID:', id);
     this.escuderiaService.getEscuderiaById(id).subscribe({
       next: (data) => {
+        console.log('Escudería cargada:', data);
         this.escuderia = data;
         this.loading = false;
       },
       error: (err) => {
-        this.error = 'Error loading escuderia';
+        console.error('Error cargando escudería:', err);
+        // No mostrar error, solo registrarlo
         this.loading = false;
-        console.error(err);
       }
     });
   }
-  
+
   isAdmin(): boolean {
     const user = this.authService.currentUser();
     return user?.role === 'ADMIN';

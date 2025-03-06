@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'; // Añade RouterLink aquí
 import { EscuderiaService } from '../../../services/escuderia.service';
 import { ComponentWithUnsavedChanges } from '../../../guards/unsaved-changes.guard';
 
 @Component({
   selector: 'app-escuderia-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink], // Añade RouterLink aquí
   templateUrl: './escuderia-form.component.html',
   styleUrl: './escuderia-form.component.css'
 })

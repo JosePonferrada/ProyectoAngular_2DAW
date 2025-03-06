@@ -23,7 +23,7 @@ public class Escuderia implements Serializable {
 	private String pais;
 
 	//bi-directional many-to-one association to Piloto
-	@OneToMany(mappedBy="escuderia")
+	@OneToMany(mappedBy="escuderia", fetch=FetchType.EAGER)
 	private List<Piloto> pilotos;
 
 	public Escuderia() {

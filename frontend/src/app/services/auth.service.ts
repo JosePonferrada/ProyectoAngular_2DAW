@@ -1,8 +1,9 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Usuario } from '../models/usuario.model';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -10,15 +11,18 @@ import { Usuario } from '../models/usuario.model';
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/usuarios`;
   currentUser = signal<Usuario | null>(null);
+  private platformId = inject(PLATFORM_ID);
 
   constructor(private http: HttpClient) {
     this.loadUserFromStorage();
   }
 
   private loadUserFromStorage(): void {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      this.currentUser.set(JSON.parse(userData));
+    if (isPlatformBrowser(this.platformId)) {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        this.currentUser.set(JSON.parse(userData));
+      }
     }
   }
 
@@ -26,7 +30,7 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/iniciarSesion`, { username, password })
       .pipe(
         tap(response => {
-          if (response && response.token) {
+          if (response.autenticado) {
             const user: Usuario = {
               id: response.id,
               username: response.username,
@@ -34,8 +38,10 @@ export class AuthService {
               role: response.role
             };
             
-            localStorage.setItem('token', response.token);
-            localStorage.setItem('user', JSON.stringify(user));
+            if (isPlatformBrowser(this.platformId)) {
+              localStorage.setItem('token', response.token);
+              localStorage.setItem('user', JSON.stringify(user));
+            }
             this.currentUser.set(user);
           }
         })
@@ -46,19 +52,27 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/cerrarSesion`, {})
       .pipe(
         tap(() => {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+          }
           this.currentUser.set(null);
         })
       );
   }
 
-  isAuthenticated(): boolean {
-    return !!localStorage.getItem('token');
+  register(username: string, email: string, password: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/registro`, { 
+      username, 
+      email, 
+      password 
+    });
   }
 
-  getUserRole(): string | null {
-    const user = this.currentUser();
-    return user ? user.role : null;
+  isAuthenticated(): boolean {
+    if (isPlatformBrowser(this.platformId)) {
+      return !!localStorage.getItem('token');
+    }
+    return false;
   }
 }

@@ -23,11 +23,12 @@ public class Piloto implements Serializable {
 	private String nombre;
 
 	//bi-directional many-to-many association to Circuito
-	@ManyToMany(mappedBy="pilotos")
+	@ManyToMany(mappedBy="pilotos", fetch=FetchType.EAGER)
 	private List<Circuito> circuitos;
 
 	//bi-directional many-to-one association to Escuderia
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="escuderia_id")
 	private Escuderia escuderia;
 
 	public Piloto() {

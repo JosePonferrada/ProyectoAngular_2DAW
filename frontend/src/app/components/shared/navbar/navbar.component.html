@@ -13,6 +13,9 @@
           <li class="nav-item">
             <a class="nav-link" routerLink="/pilotos" routerLinkActive="active">Pilotos</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/circuitos" routerLinkActive="active">Circuitos</a>
+          </li>
         </ul>
         
         @if (authService.currentUser()) {
@@ -21,7 +24,8 @@
           </div>
           <button class="btn btn-outline-danger" (click)="logout()">Logout</button>
         } @else {
-          <a routerLink="/login" class="btn btn-outline-light">Login</a>
+          <a routerLink="/login" class="btn btn-outline-light me-2">Login</a>
+          <a routerLink="/register" class="btn btn-outline-success">Registro</a>
         }
       </div>
     </div>

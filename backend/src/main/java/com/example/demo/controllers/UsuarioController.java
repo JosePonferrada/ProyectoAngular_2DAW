@@ -255,6 +255,34 @@ public class UsuarioController {
         }
     }
 
+    @PostMapping(path = "/registro", consumes = MediaType.APPLICATION_JSON_VALUE)
+public DTO registrarUsuario(@RequestBody DatosRegistroUsuario datos) {
+    // Para registro público, siempre asignar rol USER
+    DatosAltaUsuario datosAlta = new DatosAltaUsuario(
+        0, // ID automático
+        datos.username,
+        datos.password,
+        datos.email,
+        "USER" // Rol fijo para nuevos registros
+    );
+    
+    return anadirUsuario(datosAlta, null);
+}
+
+static class DatosRegistroUsuario {
+    public String username;
+    public String password;
+    public String email;
+    
+    public DatosRegistroUsuario() {}
+    
+    public DatosRegistroUsuario(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
+}
+
     /**
      * Autentica un usuario y genera un token JWT
      * @param datos Datos de login (username y password)
@@ -263,8 +291,11 @@ public class UsuarioController {
      * @return DTO con resultado de la autenticación y token JWT
      */
     @PostMapping(path = "/iniciarSesion", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public DTO iniciarSesion(@RequestBody DatosLoginUsuario datos, HttpServletRequest request, HttpServletResponse response) {
-        DTO dtoUsuario = new DTO();
+public DTO iniciarSesion(@RequestBody DatosLoginUsuario datos, HttpServletRequest request, HttpServletResponse response) {
+    DTO dtoUsuario = new DTO();
+    
+    try {
+        System.out.println("Intentando login para usuario: " + datos.username);
         Usuario usuario = usuRep.findByUsername(datos.username);
 
         if (usuario != null && passwordEncoder.matches(datos.password, usuario.getPassword())) {
@@ -274,7 +305,7 @@ public class UsuarioController {
             // Guardar token en cookie
             Cookie cookie = new Cookie("jwt", token);
             cookie.setMaxAge(-1); // La cookie expira al cerrar el navegador
-            //cookie.setPath("/");  // La cookie es válida para todo el dominio
+            cookie.setPath("/");  // Importante: define el path
             response.addCookie(cookie);
             
             dtoUsuario.put("id", usuario.getId());
@@ -288,8 +319,17 @@ public class UsuarioController {
             dtoUsuario.put("autenticado", false);
         }
         return dtoUsuario;
+    } catch (Exception e) {
+        // Registrar el error detallado en los logs
+        System.err.println("Error en iniciarSesion: " + e.getMessage());
+        e.printStackTrace();
+        
+        // Devolver una respuesta adecuada
+        dtoUsuario.put("autenticado", false);
+        dtoUsuario.put("error", "Error en el servidor: " + e.getMessage());
+        return dtoUsuario;
     }
-
+}
     /**
      * Clase interna para datos de login de usuario
      */
