@@ -1,0 +1,57 @@
+@if (loading) {
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+}
+
+@if (error) {
+  <div class="alert alert-danger">{{ error }}</div>
+}
+
+@if (!loading && !error && escuderia) {
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h3>{{ escuderia.nombre }}</h3>
+      <div>
+        <button [routerLink]="['/escuderias']" class="btn btn-secondary me-2">Volver</button>
+        @if (isAdmin()) {
+          <button [routerLink]="['/escuderias/edit', escuderia.id]" class="btn btn-warning">Editar</button>
+        }
+      </div>
+    </div>
+    <div class="card-body">
+      <p><strong>ID:</strong> {{ escuderia.id }}</p>
+      <p><strong>Nombre:</strong> {{ escuderia.nombre }}</p>
+      <p><strong>País:</strong> {{ escuderia.pais }}</p>
+    </div>
+  </div>
+
+  <h4 class="mt-4">Pilotos</h4>
+  
+  @if (pilotos.length === 0) {
+    <p>No hay pilotos en esta escudería.</p>
+  } @else {
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Dorsal</th>
+          <th>Nombre</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (piloto of pilotos; track piloto.id) {
+          <tr>
+            <td>{{ piloto.id }}</td>
+            <td>{{ piloto.dorsal }}</td>
+            <td>{{ piloto.nombre }}</td>
+            <td>
+              <button [routerLink]="['/pilotos', piloto.id]" class="btn btn-info btn-sm">Ver</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+}

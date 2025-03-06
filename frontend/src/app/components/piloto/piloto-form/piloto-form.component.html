@@ -1,0 +1,83 @@
+<div class="container mt-4">
+    <div class="card">
+      <div class="card-header">
+        <h3>{{ editMode ? 'Editar Piloto' : 'Crear Nuevo Piloto' }}</h3>
+      </div>
+      <div class="card-body">
+        @if (loading) {
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        }
+  
+        @if (error) {
+          <div class="alert alert-danger">{{ error }}</div>
+        }
+  
+        @if (success) {
+          <div class="alert alert-success">{{ success }}</div>
+        }
+  
+        @if (!loading) {
+          <form [formGroup]="pilotoForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="dorsal" class="form-label">Dorsal</label>
+              <input 
+                type="number" 
+                class="form-control" 
+                id="dorsal" 
+                formControlName="dorsal" 
+                [ngClass]="{'is-invalid': isInvalidField('dorsal')}"
+              >
+              @if (isInvalidField('dorsal')) {
+                <div class="invalid-feedback">{{ getErrorMessage('dorsal') }}</div>
+              }
+            </div>
+  
+            <div class="mb-3">
+              <label for="nombre" class="form-label">Nombre</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="nombre" 
+                formControlName="nombre" 
+                [ngClass]="{'is-invalid': isInvalidField('nombre')}"
+              >
+              @if (isInvalidField('nombre')) {
+                <div class="invalid-feedback">{{ getErrorMessage('nombre') }}</div>
+              }
+            </div>
+  
+            <div class="mb-3">
+              <label for="escuderia_id" class="form-label">Escudería</label>
+              <select 
+                class="form-select" 
+                id="escuderia_id" 
+                formControlName="escuderia_id"
+                [ngClass]="{'is-invalid': isInvalidField('escuderia_id')}"
+              >
+                <option value="">Seleccionar escudería</option>
+                @for (escuderia of escuderias; track escuderia.id) {
+                  <option [value]="escuderia.id">{{ escuderia.nombre }}</option>
+                }
+              </select>
+              @if (isInvalidField('escuderia_id')) {
+                <div class="invalid-feedback">{{ getErrorMessage('escuderia_id') }}</div>
+              }
+            </div>
+  
+            <div class="d-flex justify-content-between mt-4">
+              <button type="button" class="btn btn-secondary" [routerLink]="['/pilotos']">Cancelar</button>
+              <button 
+                type="submit" 
+                class="btn btn-primary" 
+                [disabled]="pilotoForm.invalid || submitting"
+              >
+                {{ submitting ? 'Guardando...' : (editMode ? 'Actualizar' : 'Crear') }}
+              </button>
+            </div>
+          </form>
+        }
+      </div>
+    </div>
+  </div>

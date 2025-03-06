@@ -1,0 +1,46 @@
+<h2>Lista de Escuderías</h2>
+
+@if (loading) {
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+}
+
+@if (error) {
+  <div class="alert alert-danger">{{ error }}</div>
+}
+
+@if (!loading && !error) {
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>País</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (escuderia of escuderias; track escuderia.id) {
+        <tr>
+          <td>{{ escuderia.id }}</td>
+          <td>{{ escuderia.nombre }}</td>
+          <td>{{ escuderia.pais }}</td>
+          <td>
+            <button [routerLink]="['/escuderias', escuderia.id]" class="btn btn-info btn-sm me-2">Ver</button>
+            @if (isAdmin()) {
+              <button [routerLink]="['/escuderias/edit', escuderia.id]" class="btn btn-warning btn-sm me-2">Editar</button>
+              <button (click)="deleteEscuderia(escuderia.id)" class="btn btn-danger btn-sm">Eliminar</button>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  @if (isAdmin()) {
+    <div class="mt-3">
+      <button [routerLink]="['/escuderias/new']" class="btn btn-primary">Nueva Escudería</button>
+    </div>
+  }
+}
