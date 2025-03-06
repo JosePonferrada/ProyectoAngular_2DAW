@@ -17,6 +17,7 @@ public interface EscuderiaRepositorio extends JpaRepository<Escuderia, Serializa
     public abstract Escuderia findById(int id);
     public abstract Escuderia findByNombre(String nombre);
     public abstract Escuderia findByPais(String pais);
+    public abstract List<Escuderia> findAllByPais(String pais);
 
     @Transactional
     public abstract void deleteById(int id);

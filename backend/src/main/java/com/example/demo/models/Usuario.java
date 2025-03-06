@@ -28,6 +28,14 @@ public class Usuario implements Serializable {
 	public Usuario() {
 	}
 
+	public Usuario(int id, String username, String password, String email, String role) {
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.role = role;
+	}
+
 	public int getId() {
 		return this.id;
 	}

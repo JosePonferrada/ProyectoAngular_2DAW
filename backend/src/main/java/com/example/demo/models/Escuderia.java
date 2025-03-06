@@ -29,6 +29,12 @@ public class Escuderia implements Serializable {
 	public Escuderia() {
 	}
 
+	public Escuderia(int id, String nombre, String pais) {
+		this.id = id;
+		this.nombre = nombre;
+		this.pais = pais;
+	}
+
 	public int getId() {
 		return this.id;
 	}
