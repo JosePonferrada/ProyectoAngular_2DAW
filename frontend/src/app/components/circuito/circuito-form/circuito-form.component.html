@@ -1,0 +1,68 @@
+<div class="container mt-4">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h3>{{ isEditMode ? 'Editar' : 'Crear' }} Circuito</h3>
+      </div>
+      <div class="card-body">
+        <!-- Mensaje de éxito -->
+        @if (successMessage) {
+          <div class="alert alert-success" style="background-color: #d4edda !important; color: #155724 !important; border-color: #c3e6cb !important;">
+            <i class="bi bi-check-circle me-2"></i>
+            <span>{{ successMessage }}</span>
+          </div>
+        }
+        
+        <!-- Mensaje de error -->
+        @if (errorMessage) {
+          <div class="alert alert-danger" style="background-color: #f8d7da !important; color: #721c24 !important; border-color: #f5c6cb !important;">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
+        
+        <form [formGroup]="circuitoForm" (ngSubmit)="onSubmit()">
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="nombre" 
+              formControlName="nombre"
+              [ngClass]="{'is-invalid': submitted && f['nombre'].errors}">
+            @if (submitted && f['nombre'].errors) {
+              <div class="invalid-feedback">
+                El nombre del circuito es obligatorio
+              </div>
+            }
+          </div>
+          
+          <div class="mb-3">
+            <label for="pais" class="form-label">País</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="pais" 
+              formControlName="pais"
+              [ngClass]="{'is-invalid': submitted && f['pais'].errors}">
+            @if (submitted && f['pais'].errors) {
+              <div class="invalid-feedback">
+                El país es obligatorio
+              </div>
+            }
+          </div>
+          
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" routerLink="/circuitos">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="loading">
+              @if (loading) {
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              }
+              {{ isEditMode ? 'Actualizar' : 'Crear' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

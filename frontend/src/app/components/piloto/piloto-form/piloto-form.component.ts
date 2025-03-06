@@ -87,13 +87,13 @@ export class PilotoFormComponent implements OnInit, ComponentWithUnsavedChanges 
       this.pilotoForm.markAllAsTouched();
       return;
     }
-
+  
     this.submitting = true;
     this.error = null;
     this.success = null;
-
+  
     const formData = this.pilotoForm.value;
-
+  
     if (this.editMode && this.pilotoId) {
       const piloto: Piloto = {
         id: this.pilotoId,
@@ -101,16 +101,16 @@ export class PilotoFormComponent implements OnInit, ComponentWithUnsavedChanges 
         nombre: formData.nombre,
         escuderia_id: Number(formData.escuderia_id)
       };
-
+  
       console.log(piloto);
-
+  
       this.pilotoService.updatePiloto(piloto).subscribe({
         next: (response) => {
           console.log('Respuesta del servidor:', JSON.stringify(response));
           this.submitting = false;
           if (response?.result === 'ok' || response?.resultado === 'ok') {
             this.success = 'Piloto actualizado correctamente';
-            this.pilotoForm.markAsPristine();
+            this.pilotoForm.markAsPristine(); // Marcar formulario como no modificado
             // Navigate after a short delay to show success message
             setTimeout(() => this.router.navigate(['/pilotos', this.pilotoId]), 1500);
           } else {
@@ -132,32 +132,40 @@ export class PilotoFormComponent implements OnInit, ComponentWithUnsavedChanges 
         nombre: formData.nombre,
         escuderia_id: formData.escuderia_id
       };
-
+  
       this.pilotoService.addPiloto(piloto).subscribe({
         next: (response) => {
           console.log('Respuesta completa del servidor:', response);
-
+          this.submitting = false;
+  
           // Verificar ambos posibles campos de éxito/error
           if (response.resultado === 'ok' || response.result === 'ok') {
-            // Éxito - navegar o mostrar mensaje
-            this.router.navigate(['/pilotos']);
+            // Marcar como pristine ANTES de navegar
+            this.pilotoForm.markAsPristine();
+            this.success = 'Piloto creado correctamente';
+            
+            // Navegar después de un breve retraso para mostrar el mensaje de éxito
+            setTimeout(() => {
+              this.router.navigate(['/pilotos']);
+            }, 1500);
           } else {
-            // Error desde el servidor
-            console.error('Error del servidor:', response.mensaje || response.error || 'Error desconocido');
-            // Mostrar mensaje de error
+            this.error = response.mensaje || response.error || 'Error al crear el piloto';
           }
-          this.loading = false;
         },
         error: (err) => {
+          this.submitting = false;
+          this.error = 'Error al crear el piloto';
           console.error('Error HTTP:', err);
-          this.loading = false;
-          // Mostrar mensaje de error
         }
       });
     }
   }
 
   hasUnsavedChanges(): boolean {
+    // Si está enviando el formulario o se mostró mensaje de éxito, no mostrar confirmación
+    if (this.submitting || this.success) {
+      return false;
+    }
     return this.pilotoForm.dirty;
   }
 

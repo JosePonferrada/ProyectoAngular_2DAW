@@ -16,6 +16,7 @@ import { PilotoFormComponent } from './components/piloto/piloto-form/piloto-form
 // Circuito components
 import { CircuitoListComponent } from './components/circuito/circuito-list/circuito-list.component';
 import { CircuitoDetailComponent } from './components/circuito/circuito-detail/circuito-detail.component';
+import { CircuitoFormComponent } from './components/circuito/circuito-form/circuito-form.component';
 
 // Auth components
 import { LoginComponent } from './components/auth/login/login.component';
@@ -61,6 +62,8 @@ export const routes: Routes = [
   
   // Circuito routes
   { path: 'circuitos', component: CircuitoListComponent, canActivate: [authGuard] },
+  { path: 'circuitos/new', component: CircuitoFormComponent, canActivate: [authGuard], canDeactivate: [unsavedChangesGuard] },
+  { path: 'circuitos/edit/:id', component: CircuitoFormComponent, canActivate: [authGuard], canDeactivate: [unsavedChangesGuard] },
   { path: 'circuitos/:id', component: CircuitoDetailComponent, canActivate: [authGuard] },
 
   // Auth routes

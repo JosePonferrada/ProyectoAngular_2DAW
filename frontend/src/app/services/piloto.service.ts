@@ -41,6 +41,14 @@ export class PilotoService {
   }
 
   deletePiloto(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/eliminar`, { body: { id } });
+    return this.http.delete<any>(`${this.apiUrl}/eliminar1`, {
+      body: { id } 
+    }).pipe(
+      tap(response => console.log('Respuesta eliminar piloto:', response)),
+      catchError(error => {
+        console.error('Error al eliminar piloto:', error);
+        return throwError(() => error);
+      })
+    );
   }
 }
